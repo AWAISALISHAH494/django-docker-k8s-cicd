@@ -1,0 +1,49 @@
+version: "3"
+services:
+  web:
+    build: .
+    image: django_cicd
+    container_name: django-cicd
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    networks:
+      - mynetwork
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    networks:
+      - mynetwork
+    environment:
+      POSTGRES_DB: cruddb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - django-data:/var/lib/postgresql/data
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - mynetwork
+
+
+networks:
+  mynetwork:
+volumes:
+  django-data:
+  
